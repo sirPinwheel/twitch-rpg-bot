@@ -1,6 +1,8 @@
 import socket
 from threading import Thread, Lock
 from typing import Callable, List, Any
+import certifi
+import ssl
 
 class IrcClient():
     def __init__(self) -> None:
@@ -28,6 +30,9 @@ class IrcClient():
         try:
             if self._connection is None:
                 self._connection = socket.socket()
+                self._connection = ssl.wrap_socket(self._connection,
+                    ca_certs=certifi.where(),
+                    server_side=False)
 
                 try:
                     self._connection.connect((host, port))
@@ -63,6 +68,7 @@ class IrcClient():
 
         if connection is not None:
             connection.send(f'PART {self._channel}\r\n'.encode('utf-8'))
+            connection.shutdown(socket.SHUT_RDWR)
             connection.close()
         else:
             raise RuntimeError('The client is not connected')
