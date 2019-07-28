@@ -1,4 +1,4 @@
-#!/bin/python3
+#!/usr/bin/env python3
 from irc_client import IrcClient
 from conf import *
 
