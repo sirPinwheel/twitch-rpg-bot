@@ -5,6 +5,9 @@ import certifi
 import ssl
 
 class IrcClient():
+    """
+    Class for connecting to Twitch's IRC chat server. Uses socket with SSL functionality
+    """
     def __init__(self) -> None:
         self._host: str
         self._port: int
@@ -25,6 +28,10 @@ class IrcClient():
             self.disconnect()
     
     def connect(self, host: str, port: int, user: str, oauth: str, channel: str) -> None:
+        """
+        Connects to the IRC chat using socket, saves socket object to self._connection
+        SSL certificated provided by certifi module
+        """
         self._connection_lock.acquire()
         
         try:
@@ -59,6 +66,10 @@ class IrcClient():
             self._connection_lock.release()
 
     def disconnect(self) -> None:
+        """
+        Performs safe disconnect informing host about it
+        _connection should be None after that
+        """
         self._connection_lock.acquire()
 
         connection = self._connection
@@ -79,12 +90,18 @@ class IrcClient():
             raise RuntimeError('The message thread is not running')
     
     def is_connected(self) -> bool:
+        """
+        Checks if connection is established, returns boolean
+        """
         if self._connection is None:
             return False
         else:
             return True
     
     def _send_data(self, data) -> None:
+        """
+        Sends raw data taking into account connection/packet limitations
+        """
         self._send_lock.acquire()
 
         try:
@@ -95,6 +112,10 @@ class IrcClient():
             self._send_lock.release()
 
     def _message_loop(self) -> None:
+        """
+        Waits for message data to be recieved, after that
+        calls _process_message
+        """
         buffer = ""
         while self._connection is not None:
             message_end = buffer.find('\r\n')
@@ -106,6 +127,10 @@ class IrcClient():
                 self._process_message(message)
 
     def send_message(self, message: str) -> None:
+        """
+        Wraps a string in IRC specific stuff, also encodes to UTF-8 to
+        be sent using _send_raw
+        """
         if self._connection is None:
             raise RuntimeError('The client is not connected')
 
@@ -124,6 +149,10 @@ class IrcClient():
             self._message_handlers_lock.release()
 
     def register_message_handler(self, message_handler: Callable[[str], None]) -> None:
+        """
+        Registers a callable function to be a message handler. Each handler can only
+        take one string parameter and should return nothing
+        """
         self._message_handlers_lock.acquire()
         try:
             self._message_handlers.append(message_handler)
@@ -131,6 +160,9 @@ class IrcClient():
             self._message_handlers_lock.release()
 
     def unregister_message_handler(self, message_handler: Callable[[str], None]) -> None:
+        """
+        removes a message handler
+        """
         self._message_handlers_lock.acquire()
         try:
             self._message_handlers.remove(message_handler)

@@ -11,6 +11,10 @@ irc_client.connect(HOST, PORT, NAME, OAUTH, CHANNEL)
 user_db = {}
 
 def send(m):
+    """
+    Sends a message to currently connected chat room as the bot user. This
+    function should be used as the underlying code may change
+    """
     global irc_client
     irc_client.send_message(m)
 
