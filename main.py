@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 from irc_client import IrcClient
 from character import Character
+from game import Game
 from conf import *
 
 # creating and initializing client object
@@ -9,6 +10,9 @@ irc_client.connect(HOST, PORT, NAME, OAUTH, CHANNEL)
 
 # A simple dictionary that will get wiped every restart for now ^^
 user_db = {}
+
+# The game.
+game = Game()
 
 def send(m):
     """
@@ -94,11 +98,13 @@ def help_handler(msg):
     
     # Parse sub category for !help
     if len(parts) == 0:
-        send("Available help commands are: char and game")
+        send("Available help commands are: do, char and game")
     elif parts[0] == "char":
         send("Help for character creation and development")
     elif parts[0] == "game":
         send("Help for game mechanics")
+    elif parts[0] == "do":
+        send("Help for do action mechanics")
     else:
         send("@%s There is not help page for %s!" % (user, parts[0]))
 
@@ -120,7 +126,7 @@ def char_handler(msg):
         if char == None:
             send("@%s You do not have a character! Please create one first, see '!help char' for more information" % (user))
         else:
-            send(str(char))
+            send(char.summary)
     elif parts[0] == "create":
         if len(parts) != 4:
             send("@%s This command must be used like this: '!char create <name> <gender> <class>'!" % (user))
@@ -142,11 +148,48 @@ def char_handler(msg):
     else:
         send("@%s Unknown !char command %s!" % (user, parts[0]))
 
+def do_handler(msg):
+    """
+    The parser for !do messages to the bot
+    """
+
+    # Get the preparsed message
+    parts, user = preparse_msg(msg, "!do")
+    if parts == None:
+        return
+    
+    
+    # Get character if there is one available
+    char = get_character(user)
+
+    # Parse sub category for !char
+    if char == None:
+        send("@%s You do not have a character! Please create one first, see '!help char' for more information" % (user))
+    else:
+        send(char.do(parts))
+        
+def game_handler(msg):
+    """
+    The parser for !game messages to the bot
+    """
+
+    # Get the preparsed message
+    parts, user = preparse_msg(msg, "!game")
+    if parts == None:
+        return
+
+    # Check for privileges (owner, mod)
+    
+    # Run game
+    #game
+
 # HANDLERS variable has to be below handler functions
 HANDLERS = [
 	print_msg,
     help_handler,
-    char_handler
+    char_handler,
+    do_handler,
+    game_handler
 ]
 
 # Registering handlers to be used when processing messages

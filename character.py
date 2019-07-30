@@ -1,46 +1,5 @@
-from util import *
-
-class Class:
-    """
-    The (hero) class any character has
-    """
-
-    def __init__(self, name, gender):
-        self.Name = name
-        self.Gender = gender
-
-    def __str__(self):
-        return "Hero"
-
-class Viking(Class):
-    """
-    A mighty viking
-    """
-
-    def __init__(self, gender):
-        Class.__init__(self, "viking", gender)
-
-    def __str__(self):
-        if self.Gender == "female":
-            return "female viking"
-        elif self.Gender == "male":
-            return "male viking"
-        return "viking"
-
-class Priest(Class):
-    """
-    A monk or nun, depending on gender
-    """
-
-    def __init__(self, gender):
-        Class.__init__(self, "priest", gender)
-
-    def __str__(self):
-        if self.Gender == "female":
-            return "nun"
-        elif self.Gender == "male":
-            return "monk"
-        return "priest"
+from util import first_char_upper
+from classes import Viking, Priest, Druid, Samurai, Amazon
 
 class Character:
     """
@@ -48,12 +7,33 @@ class Character:
     """
 
     def __init__(self, name, class_name, gender):
-        self.Level = 1
-        self.Name = name
+        self.level = 1
+        # default max hp might be overwritten by class
+        self.max_hp = 10
+        self.hp = self.max_hp
+        self.name = name
         if class_name == "viking":
-            self.Class = Viking(gender)
-        elif class_name == "priest" or "nun" or "monk":
-            self.Class = Priest(gender)
+            self.Class = Viking(self, gender)
+        elif class_name == "priest" or class_name == "nun" or class_name == "monk":
+            self.Class = Priest(self, gender)
+        elif class_name == "druid":
+            self.Class = Druid(self, gender)
+        elif class_name == "samurai":
+            self.Class = Samurai(self, gender)
+        elif class_name == "amazon":
+            self.Class = Amazon(self, gender)
+        else:
+            raise RuntimeError("There is no class %s!" % (class_name))
 
-    def __str__(self):
-        return "%s %s (level %i)" % (first_char_upper(str(self.Class)), self.Name, self.Level)
+    def __str__(self, stats=False):
+        return "%s %s" % (first_char_upper(str(self.Class)), self.name)
+            
+    @property
+    def summary(self):
+        """
+        A short string respresenting all important stats
+        """
+        return "%s (level %i, %i/%i HP)" % (str(self), self.level, self.hp, self.max_hp)
+
+    def do(self, what):
+        return self.Class.do(what)

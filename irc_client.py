@@ -57,7 +57,7 @@ class IrcClient():
                 self._oauth = oauth
                 self._channel = channel
 
-                self._message_thread = Thread(target=self._message_loop)
+                self._message_thread = Thread(target=self._message_loop, name="IrcMessageThread")
                 self._message_thread.start()
 
             else:
