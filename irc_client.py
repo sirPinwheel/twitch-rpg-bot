@@ -40,6 +40,7 @@ class IrcClient():
         Connects to the IRC chat using socket, saves socket object to self._connection
         SSL certificated provided by certifi module
         """
+
         self._connection_lock.acquire()
         
         try:
@@ -78,6 +79,7 @@ class IrcClient():
         Performs safe disconnect informing host about it
         _connection should be None after that
         """
+
         self._connection_lock.acquire()
 
         connection = self._connection
@@ -110,6 +112,7 @@ class IrcClient():
         """
         Sends raw data taking into account connection/packet limitations
         """
+
         self._send_lock.acquire()
 
         try:
@@ -124,6 +127,7 @@ class IrcClient():
         Waits for message data to be recieved, after that
         calls _process_message
         """
+
         buffer = ""
         while self._connection is not None:
             message_end = buffer.find('\r\n')
@@ -139,6 +143,7 @@ class IrcClient():
         Wraps a string in IRC specific stuff, also encodes to UTF-8 to
         be sent using _send_raw
         """
+
         if self._connection is None:
             raise RuntimeError('The client is not connected')
 
@@ -161,6 +166,7 @@ class IrcClient():
         Registers a callable function to be a message handler. Each handler can only
         take one string parameter and should return nothing
         """
+
         self._message_handlers_lock.acquire()
         try:
             self._message_handlers.append(message_handler)
@@ -171,6 +177,7 @@ class IrcClient():
         """
         removes a message handler
         """
+        
         self._message_handlers_lock.acquire()
         try:
             self._message_handlers.remove(message_handler)

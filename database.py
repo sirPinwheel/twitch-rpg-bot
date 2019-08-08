@@ -27,6 +27,7 @@ class Database:
         If no filename provided, the database will be created
         in memory and get destroyed upon exiting the program
         """
+        
         if self.db == None:
             if filename == "":
                 self.db = sqlite3.connect(":memory:")
@@ -43,6 +44,7 @@ class Database:
         of the list is a line returned by the database from
         first to last
         """
+        
         self.cursor.execute(query)
         self.db.commit()
         return self.cursor.fetchall()

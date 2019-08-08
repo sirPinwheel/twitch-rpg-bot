@@ -9,7 +9,7 @@ from conf import *
 IrcClient().connect(HOST, PORT, NAME, OAUTH, CHANNEL)
 
 # creating and initializing database object
-Database().initialize("")
+Database().initialize()
 
 # A simple dictionary that will get wiped every restart for now ^^
 user_db = {}
