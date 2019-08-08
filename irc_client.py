@@ -8,22 +8,30 @@ class IrcClient():
     """
     Class for connecting to Twitch's IRC chat server. Uses socket with SSL functionality
     """
-    def __init__(self) -> None:
-        self._host: str
-        self._port: int
-        self._user: str
-        self._oauth: str
-        self._channel: str
 
-        self._connection: Any = None
+    _instance = None
 
-        self._connection_lock = Lock()
-        self._send_lock = Lock()
-        self._message_handlers_lock = Lock()
+    def __new__(self):
+        if self._instance == None:
+            self._instance = super(IrcClient, self).__new__(self)
 
-        self._message_handlers: List[Callable[[str], None]] = []
+            self._host: str
+            self._port: int
+            self._user: str
+            self._oauth: str
+            self._channel: str
 
-    def __del__(self) -> None:
+            self._connection: Any = None
+
+            self._connection_lock = Lock()
+            self._send_lock = Lock()
+            self._message_handlers_lock = Lock()
+
+            self._message_handlers: List[Callable[[str], None]] = []
+
+        return self._instance
+
+    def __del__(self):
         if self._connection is not None:
             self.disconnect()
     

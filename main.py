@@ -1,12 +1,15 @@
 #!/usr/bin/env python3
 from irc_client import IrcClient
+from database import Database
 from character import Character
 from game import Game
 from conf import *
 
 # creating and initializing client object
-irc_client: IrcClient = IrcClient()
-irc_client.connect(HOST, PORT, NAME, OAUTH, CHANNEL)
+IrcClient().connect(HOST, PORT, NAME, OAUTH, CHANNEL)
+
+# creating and initializing database object
+Database().initialize("")
 
 # A simple dictionary that will get wiped every restart for now ^^
 user_db = {}
@@ -19,8 +22,8 @@ def send(m):
     Sends a message to currently connected chat room as the bot user. This
     function should be used as the underlying code may change
     """
-    global irc_client
-    irc_client.send_message(m)
+
+    IrcClient().send_message(m)
 
 def preparse_msg(msg, cmd):
     """
@@ -194,7 +197,7 @@ HANDLERS = [
 
 # Registering handlers to be used when processing messages
 for handler in HANDLERS:
-    irc_client.register_message_handler(handler)
+    IrcClient().register_message_handler(handler)
 
 # Loop waiting for user input, other functions can easily
 # be implemented, the execution time on those shouldn't
@@ -203,8 +206,7 @@ for handler in HANDLERS:
 while True:
     command: str = input()
     if command == 'exit':
-        irc_client.disconnect()
-        del irc_client
+        IrcClient().disconnect()
         break
     elif command:
         send(command)
