@@ -44,7 +44,8 @@ class Database:
         of the list is a line returned by the database from
         first to last
         """
-        
+
         self.cursor.execute(query)
         self.db.commit()
         return self.cursor.fetchall()
+        

@@ -135,21 +135,22 @@ def char_handler(msg):
             send("@%s This command must be used like this: '!char create <name> <gender> <class>'!" % (user))
             return
         name = parts[1]
-        gender = parts[2]
-        class_name = parts[3]
+        gender = parts[2].lower()
+        class_name = parts[3].lower()
         try:
             add_character(user, Character(name, class_name, gender))
             send("A new hero with the name of %s has entered the stage!" % (name))
         except RuntimeError as e:
             send("@%s %s" % (user, str(e)))
-    elif parts[0] == "kill":
+    elif parts[0] == "kill" or parts[0] == "delete":
         try:
             kill_character(user)
             send("%s has passed away!" % (str(char)))
         except RuntimeError as e:
             send("@%s %s" % (user, str(e)))
     else:
-        send("@%s Unknown !char command %s!" % (user, parts[0]))
+        #send("@%s Unknown !char command %s!" % (user, parts[0]))
+        send("@%s Unknown !char command [!char %s]!" % (user, parts[0]))
 
 def do_handler(msg):
     """

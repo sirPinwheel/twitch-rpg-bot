@@ -17,9 +17,9 @@ class HeroClass(BaseClass):
         self.actions = { "run": Action(char, "run", "runs") }
 
     def __str__(self):
-        if self.gender == "female":
+        if self.gender == "female" or self.gender == "f":
             return "female " + self.name
-        elif self.gender == "male":
+        elif self.gender == "male" or self.gender == "m":
             return "male " + self.name
         return self.name
 
@@ -53,9 +53,9 @@ class Priest(HeroClass):
         HeroClass.__init__(self, char, "priest", gender, 8)
 
     def __str__(self):
-        if self.gender == "female":
+        if self.gender == "female" or self.gender == "f":
             return "nun"
-        elif self.gender == "male":
+        elif self.gender == "male" or self.gender == "m":
             return "monk"
         return "priest"
 
@@ -66,7 +66,7 @@ class Druid(HeroClass):
     """
 
     def __init__(self, char, gender):
-        HeroClass.__init__(self, char, "priest", gender, 9)
+        HeroClass.__init__(self, char, "druid", gender, 9)
 
 class Samurai(HeroClass):
     """
