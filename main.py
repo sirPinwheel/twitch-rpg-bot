@@ -4,9 +4,13 @@ from database import Database
 from character import Character
 from game import Game
 from conf import *
+from util import check_config
 
 # creating and initializing client object
-IrcClient().connect(HOST, PORT, NAME, OAUTH, CHANNEL)
+if check_config(HOST, PORT, NAME, OAUTH, CHANNEL):
+    IrcClient().connect(HOST, PORT, NAME, OAUTH, CHANNEL)
+else:
+    raise RuntimeError("Incorrect format of config data!")
 
 # creating and initializing database object
 Database().initialize()
@@ -189,7 +193,7 @@ def game_handler(msg):
 
 # HANDLERS variable has to be below handler functions
 HANDLERS = [
-	print_msg,
+    print_msg,
     help_handler,
     char_handler,
     do_handler,

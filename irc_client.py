@@ -103,6 +103,7 @@ class IrcClient():
         """
         Checks if connection is established, returns boolean
         """
+
         if self._connection is None:
             return False
         else:
@@ -169,7 +170,10 @@ class IrcClient():
 
         self._message_handlers_lock.acquire()
         try:
-            self._message_handlers.append(message_handler)
+            if message_handler not in self._message_handlers:
+                self._message_handlers.append(message_handler)
+            else:
+                raise RuntimeError("Tried to register the same handler twice")
         finally:
             self._message_handlers_lock.release()
 
@@ -180,6 +184,9 @@ class IrcClient():
         
         self._message_handlers_lock.acquire()
         try:
-            self._message_handlers.remove(message_handler)
+            if message_handler in self._message_handlers:
+                self._message_handlers.remove(message_handler)
+            else:
+                raise RuntimeError("Tried to remove non existant handler")
         finally:
             self._message_handlers_lock.release()
