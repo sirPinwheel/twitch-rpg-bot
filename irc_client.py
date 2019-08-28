@@ -9,7 +9,7 @@ class IrcClient():
     Class for connecting to Twitch's IRC chat server. Uses socket with SSL functionality
     """
 
-    _instance = None
+    _instance: Any = None
 
     def __new__(self):
         if self._instance == None:
@@ -81,10 +81,8 @@ class IrcClient():
         """
 
         self._connection_lock.acquire()
-
         connection = self._connection
         self._connection = None
-
         self._connection_lock.release()
 
         if connection is not None:
@@ -151,9 +149,15 @@ class IrcClient():
         self._send_data(f'PRIVMSG {self._channel} :{message}\r\n'.encode('utf-8'))
 
     def _process_message(self, message) -> None:
+        """
+        Checks if the message was user-sent and calls all handlers using that message
+        """
         if message[:4] == "PING":
             self._send_data(f'PONG {message[4:]}\r\n'.encode('utf-8'))
             return
+        if message.split()[0] == ":tmi.twitch.tv": return
+        if message.split()[0] == ":" + self._user.lower() + ".tmi.twitch.tv".format(): return
+        if message.split("!")[0] == ":" + self._user.lower(): return
 
         self._message_handlers_lock.acquire()
         try:

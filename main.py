@@ -4,11 +4,12 @@ from database import Database
 from character import Character
 from game import Game
 from conf import *
-from util import check_config
+from util import check_config, get_msg, get_usr
 
 # creating and initializing client object
 if check_config(HOST, PORT, NAME, OAUTH, CHANNEL):
     IrcClient().connect(HOST, PORT, NAME, OAUTH, CHANNEL)
+    print('[i] CONNECTED TO: ' + CHANNEL)
 else:
     raise RuntimeError("Incorrect format of config data!")
 
@@ -90,8 +91,9 @@ def kill_character(user):
 # so to not block rest of the handlers from executing
 
 # Section for defining handler functions
-def print_msg(msg):
-	print(msg)
+def print_handler(msg):
+	print(get_usr(msg) + ': ' + get_msg(msg))
+    #print(msg)
 
 def help_handler(msg):
     """
@@ -193,7 +195,7 @@ def game_handler(msg):
 
 # HANDLERS variable has to be below handler functions
 HANDLERS = [
-    print_msg,
+    print_handler,
     help_handler,
     char_handler,
     do_handler,
@@ -212,6 +214,9 @@ while True:
     command: str = input()
     if command == 'exit':
         IrcClient().disconnect()
+        print('[i] DISCONNECTED')
         break
-    elif command:
-        send(command)
+    elif command[:5] == 'send ':
+        IrcClient().send_message(command[5:])
+    else:
+        print('[i] UNKNOWN COMMAND: ' + command)
